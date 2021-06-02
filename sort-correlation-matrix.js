@@ -1,17 +1,43 @@
-let { assert, max, min, copy, sort, sum, pow, DataFrame, isEqual, transpose } = require("js-math-tools")
+let {
+  assert,
+  max,
+  min,
+  copy,
+  sort,
+  sum,
+  pow,
+  DataFrame,
+  isEqual,
+  transpose,
+} = require("js-math-tools")
 
-function sortCorrelationMatrix(correlations){
-  assert(correlations instanceof DataFrame, "You must pass a DataFrame into the `sortCorrelationMatrix` function!")
-  assert(isEqual(correlations.values, transpose(correlations.values)), "The correlations matrix passed into the `sortCorrelationMatrix` function must be symmetrical!")
-  assert(isEqual(correlations.columns, correlations.index), "The correlations matrix passed into the `sortCorrelationMatrix` function must be symmetrical!")
-  assert(max(correlations.values) <= 1 && min(correlations.values) >= -1, "The correlations matrix passed into the `sortCorrelationMatrix` function must not contain values less than -1 or greater than 1!")
+function sortCorrelationMatrix(correlations) {
+  assert(
+    correlations instanceof DataFrame,
+    "You must pass a DataFrame into the `sortCorrelationMatrix` function!"
+  )
+
+  assert(
+    isEqual(correlations.values, transpose(correlations.values)),
+    "The correlations matrix passed into the `sortCorrelationMatrix` function must be symmetrical!"
+  )
+
+  assert(
+    isEqual(correlations.columns, correlations.index),
+    "The correlations matrix passed into the `sortCorrelationMatrix` function must be symmetrical!"
+  )
+
+  assert(
+    max(correlations.values) <= 1 && min(correlations.values) >= -1,
+    "The correlations matrix passed into the `sortCorrelationMatrix` function must not contain values less than -1 or greater than 1!"
+  )
 
   let freeRows = copy(correlations.index)
   let fixedRows = []
 
-  while (freeRows.length > 0){
+  while (freeRows.length > 0) {
     // get row with greatest 2-norm
-    if (fixedRows.length === 0){
+    if (fixedRows.length === 0) {
       let twoNormCache = {}
 
       freeRows = sort(freeRows, (a, b) => {
@@ -23,18 +49,18 @@ function sortCorrelationMatrix(correlations){
         let sum1 = 0
         let sum2 = 0
 
-        if (twoNormCache[a]){
-        sum1 = twoNormCache[a]
+        if (twoNormCache[a]) {
+          sum1 = twoNormCache[a]
         } else {
-        sum1 = sum(pow(row1, 2))
-        twoNormCache[a] = sum1
+          sum1 = sum(pow(row1, 2))
+          twoNormCache[a] = sum1
         }
 
-        if (twoNormCache[b]){
-        sum2 = twoNormCache[b]
+        if (twoNormCache[b]) {
+          sum2 = twoNormCache[b]
         } else {
-        sum2 = sum(pow(row2, 2))
-        twoNormCache[b] = sum2
+          sum2 = sum(pow(row2, 2))
+          twoNormCache[b] = sum2
         }
 
         if (sum1 < sum2) return 1

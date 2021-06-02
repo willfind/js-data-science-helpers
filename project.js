@@ -1,7 +1,7 @@
 let { assert, isArray, shape, scale, dot } = require("js-math-tools")
 let containsOnlyNumbers = require("./contains-only-numbers.js")
 
-function project(v, u){
+function project(v, u) {
   assert(isArray(v), "`project` only works on vectors!")
   assert(isArray(u), "`project` only works on vectors!")
   assert(containsOnlyNumbers(v), "`project` only works on vectors of numbers!")

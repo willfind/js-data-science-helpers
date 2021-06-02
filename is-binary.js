@@ -1,6 +1,6 @@
 let { assert, isArray, Series, sort, set, flatten } = require("js-math-tools")
 
-function isBinary(x){
+function isBinary(x) {
   assert(isArray(x), "The `isBinary` function only works on arrays!")
   let nonMissingValues = new Series(x).dropMissing().values
   let values = sort(set(flatten(nonMissingValues)))

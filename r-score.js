@@ -1,7 +1,7 @@
 let { sum, pow, mean, sign, sqrt, abs, add, scale } = require("js-math-tools")
 let subtract = (a, b) => add(a, scale(b, -1))
 
-function rScore(xtrue, xpred){
+function rScore(xtrue, xpred) {
   let num = sum(pow(subtract(xtrue, xpred), 2))
   let den = sum(pow(subtract(xtrue, mean(xtrue)), 2))
   if (den === 0) return 0

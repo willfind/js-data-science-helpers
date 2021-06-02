@@ -1,12 +1,25 @@
-let { isUndefined, copy, assert, isArray, shape, transpose, clamp } = require("js-math-tools")
-let dropMissingPairwise = require("./drop-missing-pairwise.js")
+let {
+  isUndefined,
+  copy,
+  assert,
+  isArray,
+  shape,
+  transpose,
+  clamp,
+  dropMissingPairwise,
+} = require("js-math-tools")
+
 let pvalue = require("../../lib/p-value")
 
-function getPValueMatrix(a, b){
+function getPValueMatrix(a, b) {
   if (isUndefined(b)) b = copy(a)
 
   assert(isArray(a) && isArray(b), "`getPValueMatrix` only works on matrices!")
-  assert(shape(a).length === 2 && shape(b).length === 2, "`getPValueMatrix` only works on matrices!")
+
+  assert(
+    shape(a).length === 2 && shape(b).length === 2,
+    "`getPValueMatrix` only works on matrices!"
+  )
 
   // note: this produces a "missing-aware" p-value matrix!
   let out = []

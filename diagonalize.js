@@ -1,13 +1,17 @@
 let { isArray, shape, assert, zeros } = require("js-math-tools")
 
-function diagonalize(x){
+function diagonalize(x) {
   assert(isArray(x), "The `diagonalize` function only works on vectors!")
 
   let xShape = shape(x)
-  assert(xShape.length === 1, "The `diagonalize` function only works on vectors!")
+
+  assert(
+    xShape.length === 1,
+    "The `diagonalize` function only works on vectors!"
+  )
 
   let out = zeros([xShape[0], xShape[0]])
-  x.forEach((v, i) => out[i][i] = v)
+  x.forEach((v, i) => (out[i][i] = v))
   return out
 }
 

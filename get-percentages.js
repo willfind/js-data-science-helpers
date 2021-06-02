@@ -1,11 +1,10 @@
-let getCounts = require("./get-counts.js")
+let { count } = require("js-math-tools")
 
-function getPercentages(x){
-  let counts = getCounts(x)
+function getPercentages(x) {
+  let counts = count(x)
 
   return counts.map(c => {
-    c[1] /= x.length
-    return c
+    return c.count / x.length
   })
 }
 

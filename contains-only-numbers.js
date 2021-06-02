@@ -1,9 +1,9 @@
 let { assert, isArray, flatten, set } = require("js-math-tools")
 
-function containsOnlyNumbers(x){
+function containsOnlyNumbers(x) {
   assert(isArray(x), "The `containsOnlyNumbers` only works on arrays!")
   let temp = flatten(x)
-  let types = set(temp.map(v => typeof(v)))
+  let types = set(temp.map(v => typeof v))
   return types.length === 1 && types[0] === "number"
 }
 
