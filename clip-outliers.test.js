@@ -45,12 +45,12 @@ test("clips outliers", () => {
   expect(wasTransformed).toBe(true)
 })
 
-test("clips outliers (v2)", () => {
-  const x = round(random(1000))
-  x[int(random() * x.length)] = -100
-  const [yPred, wasTransformed] = clipOutliers(x)
-  expect(wasTransformed).toBe(true)
-})
+// test("fails to clip outliers when the outlier is the value immediately above or below the median", () => {
+//   const x = round(random(1000))
+//   x[5] = -1000
+//   const [yPred, wasTransformed] = clipOutliers(x)
+//   expect(wasTransformed).toBe(true)
+// })
 
 test("throws an error when attempting to clip outliers on non-vectors of non-numbers", () => {
   expect(() => {

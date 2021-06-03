@@ -14,11 +14,13 @@ let {
   min,
   clamp,
   dropNaN,
+  sort,
+  pow,
 } = require("js-math-tools")
 
 let isBinary = require("./is-binary.js")
-let alphaSort = (a, b) => a - b
 let subtract = (a, b) => add(a, scale(b, -1))
+let divide = (a, b) => scale(a, pow(b, -1))
 
 function clipOutliers(x, maxScore) {
   maxScore = maxScore || 5
@@ -36,9 +38,7 @@ function clipOutliers(x, maxScore) {
   let xMad = median(abs(subtract(numericalValues, xMedian)))
 
   if (xMad === 0) {
-    let temp = copy(numericalValues)
-    temp.sort(alphaSort)
-    let middle = int(temp.length / 2)
+    let temp = sort(copy(numericalValues))
     let low = temp.filter(value => value < xMedian)
     let high = temp.filter(value => value > xMedian)
     let before = xMedian
@@ -51,7 +51,7 @@ function clipOutliers(x, maxScore) {
     if (xMad === 0) return [x, false]
   }
 
-  let score = max(scale(abs(subtract(numericalValues, xMedian)), 1 / xMad))
+  let score = max(divide(abs(subtract(numericalValues, xMedian)), xMad))
 
   if (score > maxScore) {
     let out = x.map(v => {
@@ -67,5 +67,9 @@ function clipOutliers(x, maxScore) {
     return [x, false]
   }
 }
+
+console.warn(
+  "The `clipOutliers` function does not handle at least one edge case: in cases where an outlier is the value immediately above or below the median, the `clipOutliers` function will fail to transform the data! This is a known problem, but we haven't found a fix for it yet. :("
+)
 
 module.exports = clipOutliers
