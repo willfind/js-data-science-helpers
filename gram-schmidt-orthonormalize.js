@@ -17,6 +17,7 @@ let containsOnlyNumbers = require("./contains-only-numbers.js")
 let project = require("./project.js")
 let getMagnitude = require("./get-magnitude.js")
 let divide = (a, b) => scale(a, pow(b, -1))
+let subtract = (a, b) => add(a, scale(b, -1))
 
 function gramSchmidtOrthonormalize(x) {
   assert(isArray(x), "`gramSchmidtOrthonormalize` only works on matrices!")
