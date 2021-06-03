@@ -1,3 +1,4 @@
+let pValue = require("./p-value.js")
 let {
   isUndefined,
   copy,
@@ -8,8 +9,6 @@ let {
   clamp,
   dropMissingPairwise,
 } = require("js-math-tools")
-
-let pvalue = require("../../lib/p-value")
 
 function getPValueMatrix(a, b) {
   if (isUndefined(b)) b = copy(a)
@@ -27,18 +26,15 @@ function getPValueMatrix(a, b) {
   let bTemp = transpose(b)
 
   aTemp.forEach(row1 => {
-    let pvalues = []
+    let pValues = []
 
     bTemp.forEach(row2 => {
-      let results = dropMissingPairwise(row1, row2)
-      let row1Temp = results.a
-      let row2Temp = results.b
-      let p = clamp(pvalue(row1Temp, row2Temp), 0, 1)
-      assert(p >= 0 && p <= 1, "Uh-oh (p-value)!")
-      pvalues.push(p)
+      let [row1Temp, row2Temp] = dropMissingPairwise(row1, row2)
+      let p = clamp(pValue(row1Temp, row2Temp), 0, 1)
+      pValues.push(p)
     })
 
-    out.push(pvalues)
+    out.push(pValues)
   })
 
   return out
