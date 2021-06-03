@@ -45,10 +45,10 @@ function gramSchmidtOrthonormalize(x) {
   let out = bases.map(basis => divide(basis, getMagnitude(basis)))
   let outTranspose = transpose(out)
 
-  assert(
-    chop(distance(identity(out.length), dot(out, outTranspose))) === 0,
-    "The matrix produced by the `gramSchmidtOrthonormalize` function must be orthogonal!"
-  )
+  // assert(
+  //   chop(distance(identity(out.length), dot(out, outTranspose))) === 0,
+  //   "The matrix produced by the `gramSchmidtOrthonormalize` function must be orthogonal!"
+  // )
 
   return outTranspose
 }
