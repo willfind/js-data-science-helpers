@@ -4,7 +4,8 @@ function getPercentages(x) {
   let counts = count(x)
 
   return counts.map(c => {
-    return c.count / x.length
+    c.percentage = c.count / x.length
+    return c
   })
 }
 
