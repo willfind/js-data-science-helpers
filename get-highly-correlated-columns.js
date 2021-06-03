@@ -37,6 +37,7 @@ function getHighlyCorrelatedColumns(correlations) {
       if (i !== j) {
         let value = correlations.values[i][j]
 
+        // note that this only detects columns that are highly POSITIVELY correlated!
         if (1 - value < 1e-5) {
           let rowName = correlations.index[i]
           let colName = correlations.columns[j]
