@@ -1,14 +1,29 @@
-let { assert, isArray, Series, sort, set, flatten } = require("js-math-tools")
+let {
+  assert,
+  isArray,
+  Series,
+  sort,
+  set,
+  flatten,
+  dropNaN,
+} = require("js-math-tools")
 
 function isBinary(x) {
-  assert(isArray(x), "The `isBinary` function only works on arrays!")
-  let nonMissingValues = new Series(x).dropMissing().values
-  let values = sort(set(flatten(nonMissingValues)))
+  if (typeof x === "number") {
+    return x === 0 || x === 1
+  }
 
-  return (
-    (values.length === 2 && values[0] === 0 && values[1] === 1) ||
-    (values.length === 1 && (values[0] === 0 || values[0] === 1))
-  )
+  if (isArray(x)) {
+    let nonMissingValues = dropNaN(flatten(x))
+    let values = sort(set(nonMissingValues))
+
+    return (
+      (values.length === 2 && values[0] === 0 && values[1] === 1) ||
+      (values.length === 1 && (values[0] === 0 || values[0] === 1))
+    )
+  }
+
+  return false
 }
 
 module.exports = isBinary

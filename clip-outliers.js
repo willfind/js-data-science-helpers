@@ -29,9 +29,8 @@ function clipOutliers(x, maxScore) {
   assert(isArray(x), "`x` must be a one-dimensional array!")
   assert(shape(x).length === 1, "`x` must be a one-dimensional array!")
 
-  if (isBinary(x)) return [x, false]
-
   let numericalValues = dropNaN(x)
+  if (isBinary(numericalValues)) return [x, false]
   if (numericalValues.length === 0) return [x, false]
 
   let xMedian = median(numericalValues)
