@@ -35,4 +35,44 @@ test("", () => {
   expect(() => {
     gramSchmidtOrthonormalize()
   }).toThrow()
+
+  expect(() => {
+    gramSchmidtOrthonormalize([1, 2, 3])
+  }).toThrow()
+
+  expect(() => {
+    gramSchmidtOrthonormalize(normal([5, 5, 5, 5]))
+  }).toThrow()
+
+  expect(() => {
+    gramSchmidtOrthonormalize(123)
+  }).toThrow()
+
+  expect(() => {
+    gramSchmidtOrthonormalize("foo")
+  }).toThrow()
+
+  expect(() => {
+    gramSchmidtOrthonormalize(true)
+  }).toThrow()
+
+  expect(() => {
+    gramSchmidtOrthonormalize(false)
+  }).toThrow()
+
+  expect(() => {
+    gramSchmidtOrthonormalize(null)
+  }).toThrow()
+
+  expect(() => {
+    gramSchmidtOrthonormalize(undefined)
+  }).toThrow()
+
+  expect(() => {
+    gramSchmidtOrthonormalize(() => {})
+  }).toThrow()
+
+  expect(() => {
+    gramSchmidtOrthonormalize({})
+  }).toThrow()
 })
