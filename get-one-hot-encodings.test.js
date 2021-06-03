@@ -9,7 +9,7 @@ const {
   normal,
 } = require("js-math-tools")
 
-test("", () => {
+test("one-hot-encodes a small array", () => {
   const name = "test"
   const values = ["foo", "bar", "baz"]
 
@@ -23,7 +23,7 @@ test("", () => {
   expect(yPred).toStrictEqual(yPred)
 })
 
-test("", () => {
+test("one-hot-encodes a large array", () => {
   const name = "test"
   const values = ["a", "b", "c", "d"]
 
@@ -45,7 +45,7 @@ test("", () => {
   expect(indexOf(x, "d")).toStrictEqual(indexOf(yPred["test_d"], 1))
 })
 
-test("", () => {
+test("throws an error when attempting to one-hot-encode non-string variable names and non-vectors", () => {
   expect(() => {
     getOneHotEncodings()
   }).toThrow()
