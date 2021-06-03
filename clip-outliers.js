@@ -68,8 +68,8 @@ function clipOutliers(x, maxScore) {
   }
 }
 
-console.warn(
-  "The `clipOutliers` function does not handle at least one edge case: in cases where an outlier is the value immediately above or below the median, the `clipOutliers` function will fail to transform the data! This is a known problem, but we haven't found a fix for it yet. :("
-)
+// console.warn(
+//   "The `clipOutliers` function does not handle at least one edge case: in cases where an outlier is the value immediately above or below the median, the `clipOutliers` function will fail to transform the data! This is a known problem, but we haven't found a fix for it yet. :("
+// )
 
 module.exports = clipOutliers
