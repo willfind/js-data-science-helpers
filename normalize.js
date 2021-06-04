@@ -6,6 +6,7 @@ let {
   mean,
   std,
   isUndefined,
+  dropNaN,
 } = require("js-math-tools")
 
 function normalize(x) {
@@ -17,7 +18,7 @@ function normalize(x) {
   )
 
   // note that this is a "missing-aware" function!
-  let nonMissingValues = new Series(x).dropMissing().values
+  let nonMissingValues = dropNaN(x)
   let m = mean(nonMissingValues)
   let s = std(nonMissingValues)
 
