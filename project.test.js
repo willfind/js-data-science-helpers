@@ -50,6 +50,10 @@ test("throws an error when attempting to project non-vectors onto non-vectors", 
   }).toThrow()
 
   expect(() => {
+    project([1, 2, "three"], ["four", 5, 6])
+  }).toThrow()
+
+  expect(() => {
     project(normal([5, 5, 5]), normal([5, 5, 5]))
   }).toThrow()
 
