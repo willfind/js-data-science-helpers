@@ -66,7 +66,9 @@ function preprocess(rawData) {
 
     // get non-missing values
     let nonMissingValues = col.filter(v => {
-      return !isUndefined(v) && (typeof v !== "string" || v.length > 0)
+      return (
+        !isUndefined(v) && !isNaN(v) && (typeof v !== "string" || v.length > 0)
+      )
     })
 
     let nonMissingValuesSet = set(nonMissingValues)

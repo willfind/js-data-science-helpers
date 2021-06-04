@@ -47,7 +47,19 @@ test("drops highly correlated columns", () => {
   expect(yPred.get(null, 0).values).toStrictEqual(a)
 })
 
-test("drops columns with less than 15 non-missing values", () => {})
+test("drops columns with less than 15 non-missing values", () => {
+  const a = random(1000)
+  const b = range(0, 1000).map(i => NaN)
+
+  for (let i = 0; i < 10; i++) {
+    b[int(random() * b.length)] = random()
+  }
+
+  const x = new DataFrame({ a, b })
+  const yPred = preprocess(x)
+  expect(yPred.columns).toStrictEqual(["a"])
+  expect(yPred.get(null, 0).values).toStrictEqual(a)
+})
 
 test("drops empty columns", () => {})
 
