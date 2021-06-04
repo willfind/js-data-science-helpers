@@ -71,8 +71,8 @@ function preprocess(rawData) {
 
     // get primary type (i.e., number, string, etc.)
     let types = nonMissingValues.map(v => typeof v)
-    let typeCounts = count(types)
-    let type = typeCounts[0][0]
+    let typeCounts = sort(count(types), (a, b) => b.count - a.count)
+    let type = typeCounts[0].item
 
     // drop ID columns (i.e., columns with all unique values)
     if (
