@@ -144,6 +144,8 @@ function preprocess(rawData) {
 
   // drop any literally identical columns
   x.forEach((col1, i) => {
+    if (columnsToDrop.indexOf(columns[i]) > -1) return
+
     x.forEach((col2, j) => {
       if (i !== j && isEqual(col1, col2)) {
         if (DEBUG) {
