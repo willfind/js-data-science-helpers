@@ -118,7 +118,8 @@ function preprocess(rawData) {
       }
 
       // else if it contains more than 25 numerical values, then parse as numbers and set unparseable strings to NaN
-      let numberCount = typeCounts.filter(t => t[0] === "number")[0] || 0
+      let numberCount =
+        typeCounts.filter(t => t.item === "number")[0].count || 0
       if (numberCount >= 25) type = "number"
 
       // else if it contains fewer than 25 numerical values, then drop it
