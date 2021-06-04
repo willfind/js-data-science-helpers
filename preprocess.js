@@ -7,6 +7,10 @@ let {
   isEqual,
   sort,
   count,
+  copy,
+  isNumber,
+  isBoolean,
+  isString,
 } = require("js-math-tools")
 
 let getCorrelationMatrix = require("./get-correlation-matrix.js")
@@ -36,19 +40,23 @@ function preprocess(rawData) {
       if (isUndefined(v)) return null
 
       // numbers
+      if (isNumber(v)) return v
+
       try {
         let vFloat = JSON.parse(v)
         if (!isNaN(vFloat)) return vFloat
       } catch (e) {}
 
-      // dates
-      let vDate = Date.parse(v)
-      if (!isNaN(vDate)) return vDate
+      if (isString(v)) {
+        // dates
+        let vDate = Date.parse(v)
+        if (!isNaN(vDate)) return vDate
 
-      // booleans
-      let vLower = v.trim().toLowerCase()
-      if (vLower === "true") return true
-      if (vLower === "false") return false
+        // booleans
+        let vLower = v.trim().toLowerCase()
+        if (vLower === "true") return true
+        if (vLower === "false") return false
+      }
 
       // otherwise unparseable strings
       return v
