@@ -67,7 +67,10 @@ function preprocess(rawData) {
     // get non-missing values
     let nonMissingValues = col.filter(v => {
       return (
-        !isUndefined(v) && !isNaN(v) && (typeof v !== "string" || v.length > 0)
+        isNumber(v) ||
+        (isString(v) && v.length > 0) ||
+        isBoolean(v) ||
+        typeof v === "object"
       )
     })
 
@@ -128,9 +131,11 @@ function preprocess(rawData) {
       }
 
       // else if it contains more than 25 numerical values, then parse as numbers and set unparseable strings to NaN
-      let numberCount =
-        typeCounts.filter(t => t.item === "number")[0].count || 0
-      if (numberCount >= 25) type = "number"
+      try {
+        let numberCount =
+          typeCounts.filter(t => t.item === "number")[0].count || 0
+        if (numberCount >= 25) type = "number"
+      } catch (e) {}
 
       // else if it contains fewer than 25 numerical values, then drop it
       // else return columnsToDrop.push(colName)

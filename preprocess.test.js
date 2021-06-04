@@ -13,6 +13,7 @@ const {
   shuffle,
   shape,
   transpose,
+  sort,
 } = require("js-math-tools")
 
 // generate data with these types:
@@ -106,4 +107,14 @@ test("drops string columns with 100% unique values", () => {
   expect(yPred.get(null, 0).values).toStrictEqual(a)
 })
 
-test("one-hot-encodes string columns with 5 or fewer unique values", () => {})
+test("one-hot-encodes string columns with 5 or fewer unique values", () => {
+  const values = range(0, 5).map(i => makeKey(8))
+  const a = random(1000)
+  const b = range(0, 1000).map(i => values[int(random() * values.length)])
+  const x = new DataFrame({ a, b })
+  const yPred = preprocess(x)
+
+  expect(sort(yPred.columns)).toStrictEqual(
+    sort(["a", "b"].concat(values.map(v => "b_" + v)))
+  )
+})
