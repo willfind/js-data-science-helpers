@@ -6,11 +6,11 @@ let {
   set,
   isEqual,
   sort,
+  count,
 } = require("js-math-tools")
 
 let getCorrelationMatrix = require("./get-correlation-matrix.js")
 let getHighlyCorrelatedColumns = require("./get-highly-correlated-columns.js")
-let getCounts = require("./get-counts.js")
 let getOneHotEncodings = require("./get-one-hot-encodings.js")
 let clipOutliers = require("./clip-outliers.js")
 
@@ -71,7 +71,7 @@ function preprocess(rawData) {
 
     // get primary type (i.e., number, string, etc.)
     let types = nonMissingValues.map(v => typeof v)
-    let typeCounts = getCounts(types)
+    let typeCounts = count(types)
     let type = typeCounts[0][0]
 
     // drop ID columns (i.e., columns with all unique values)
