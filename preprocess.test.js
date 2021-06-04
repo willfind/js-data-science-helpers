@@ -86,7 +86,16 @@ test("drops columns with only 1 unique value", () => {
   expect(yPred.get(null, 0).values).toStrictEqual(a)
 })
 
-test("clips outliers", () => {})
+test("clips outliers", () => {
+  const a = random(1000)
+  const b = random(1000)
+  b[0] = 99999
+  const x = new DataFrame({ a, b })
+  const yPred = preprocess(x)
+  expect(yPred.columns).toStrictEqual(["a", "b"])
+  expect(yPred.get(null, 0).values).toStrictEqual(a)
+  expect(yPred.get(null, 1).values).not.toStrictEqual(b)
+})
 
 test("drops string columns with 100% unique values", () => {})
 
