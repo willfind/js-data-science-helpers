@@ -1,7 +1,7 @@
 const getPercentages = require("./get-percentages.js")
 const { normal } = require("js-math-tools")
 
-test("", () => {
+test("gets percentages of values in a small array", () => {
   const x = [2, 3, 3, 4]
 
   const yTrue = [
@@ -14,7 +14,7 @@ test("", () => {
   expect(yPred).toStrictEqual(yTrue)
 })
 
-test("", () => {
+test("gets percentages of values in a big array", () => {
   const x = []
 
   for (let i = 0; i < 330; i++) x.push(5)
@@ -33,7 +33,7 @@ test("", () => {
   expect(yPred).toStrictEqual(yTrue)
 })
 
-test("", () => {
+test("throws an error when attempting to get percentages in non-arrays", () => {
   expect(() => {
     getPercentages()
   }).toThrow()

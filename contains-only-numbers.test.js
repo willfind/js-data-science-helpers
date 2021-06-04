@@ -1,7 +1,7 @@
 const containsOnlyNumbers = require("./contains-only-numbers.js")
 const { normal, range } = require("js-math-tools")
 
-test("", () => {
+test("checks if various arrays contain only numbers", () => {
   const a = [1, 2, 3, 4, 5]
   expect(containsOnlyNumbers(a)).toBe(true)
 

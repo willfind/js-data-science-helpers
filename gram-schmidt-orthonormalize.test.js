@@ -14,7 +14,7 @@ const {
   distance,
 } = require("js-math-tools")
 
-test("", () => {
+test("orthonormalizes some closely related vectors", () => {
   const a = normal(10000)
   const b = add(a, scale(0.01, normal(shape(a))))
   const x = transpose([a, b])
@@ -23,7 +23,7 @@ test("", () => {
   expect(abs(correl(yPred[0], yPred[1]))).toBeLessThan(0.001)
 })
 
-test("", () => {
+test("orthonormalizes a matrix", () => {
   const x = normal([1000, 5])
   const xn = gramSchmidtOrthonormalize(x)
   const yPred = chop(round(getCorrelationMatrix(xn)))
@@ -31,7 +31,7 @@ test("", () => {
   expect(distance(yPred, yTrue)).toBeLessThan(1e-5)
 })
 
-test("", () => {
+test("throws an error when attempting to orthonormalize non-matrices", () => {
   expect(() => {
     gramSchmidtOrthonormalize()
   }).toThrow()

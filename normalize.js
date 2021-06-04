@@ -23,8 +23,11 @@ function normalize(x) {
   let s = std(nonMissingValues)
 
   return x.map(value => {
-    if (isUndefined(value)) return null
-    return (value - m) / s
+    if (typeof value === "number") {
+      return (value - m) / s
+    } else {
+      return value
+    }
   })
 }
 

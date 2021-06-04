@@ -12,19 +12,19 @@ const {
   round,
 } = require("js-math-tools")
 
-test("", () => {
+test("normalizes an already-normalized vector", () => {
   const x = normalize(normal(1000))
   expect(abs(mean(x))).toBeLessThan(1e-5)
   expect(abs(std(x) - 1)).toBeLessThan(1e-5)
 })
 
-test("", () => {
+test("normalizes a vector", () => {
   const x = normalize(scale(add(random(1000), -100), 50))
   expect(abs(mean(x))).toBeLessThan(1e-5)
   expect(abs(std(x) - 1)).toBeLessThan(1e-5)
 })
 
-test("", () => {
+test("normalizes each column in a DataFrame", () => {
   let x = new DataFrame({
     a: range(0, 1000),
     b: random(1000),
@@ -41,7 +41,7 @@ test("", () => {
   })
 })
 
-test("", () => {
+test("throws an error when attempting to normalize non-vectors", () => {
   expect(() => {
     normalize()
   }).toThrow()
