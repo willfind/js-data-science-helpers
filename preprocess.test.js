@@ -61,7 +61,18 @@ test("drops columns with less than 15 non-missing values", () => {
   expect(yPred.get(null, 0).values).toStrictEqual(a)
 })
 
-test("drops empty columns", () => {})
+test("drops empty columns", () => {
+  const a = random(1000)
+  const b = range(0, 1000).map(i => null)
+  const c = random(1000)
+  const d = range(0, 1000).map(i => undefined)
+  const e = range(0, 1000).map(i => NaN)
+  const x = new DataFrame({ a, b, c, d, e })
+  const yPred = preprocess(x)
+  expect(yPred.columns).toStrictEqual(["a", "c"])
+  expect(yPred.get(null, 0).values).toStrictEqual(a)
+  expect(yPred.get(null, 1).values).toStrictEqual(c)
+})
 
 test("drops columns with only 1 unique value", () => {})
 
