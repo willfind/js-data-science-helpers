@@ -74,7 +74,17 @@ test("drops empty columns", () => {
   expect(yPred.get(null, 1).values).toStrictEqual(c)
 })
 
-test("drops columns with only 1 unique value", () => {})
+test("drops columns with only 1 unique value", () => {
+  const a = random(1000)
+  const r = random()
+  const b = range(0, 1000).map(i => r)
+  const k = makeKey(8)
+  const c = range(0, 1000).map(i => k)
+  const x = new DataFrame({ a, b, c })
+  const yPred = preprocess(x)
+  expect(yPred.columns).toStrictEqual(["a"])
+  expect(yPred.get(null, 0).values).toStrictEqual(a)
+})
 
 test("clips outliers", () => {})
 
