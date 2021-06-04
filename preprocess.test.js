@@ -118,3 +118,49 @@ test("one-hot-encodes string columns with 5 or fewer unique values", () => {
     sort(["a", "b"].concat(values.map(v => "b_" + v)))
   )
 })
+
+test("throws an error when attempting to preprocess non-DataFrames", () => {
+  expect(() => {
+    preprocess()
+  }).toThrow()
+
+  expect(() => {
+    preprocess(normal([1000, 5]))
+  }).toThrow()
+
+  expect(() => {
+    preprocess(new DataFrame())
+  }).toThrow()
+
+  expect(() => {
+    preprocess(123)
+  }).toThrow()
+
+  expect(() => {
+    preprocess("foo")
+  }).toThrow()
+
+  expect(() => {
+    preprocess(true)
+  }).toThrow()
+
+  expect(() => {
+    preprocess(false)
+  }).toThrow()
+
+  expect(() => {
+    preprocess(null)
+  }).toThrow()
+
+  expect(() => {
+    preprocess(undefined)
+  }).toThrow()
+
+  expect(() => {
+    preprocess(() => {})
+  }).toThrow()
+
+  expect(() => {
+    preprocess({})
+  }).toThrow()
+})
