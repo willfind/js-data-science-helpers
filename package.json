@@ -1,13 +1,13 @@
 {
-  "name": "helpers",
-  "version": "1.0.0",
+  "name": "js-data-science-helpers",
+  "version": "0.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "jest"
   },
   "keywords": [],
-  "author": "",
+  "author": "jrc03c",
   "license": "ISC",
   "dependencies": {
     "js-math-tools": "github:jrc03c/js-math-tools",
