@@ -22,6 +22,8 @@ function normalize(x) {
   let m = mean(nonMissingValues)
   let s = std(nonMissingValues)
 
+  if (s === 0) return x
+
   return x.map(value => {
     if (typeof value === "number") {
       return (value - m) / s

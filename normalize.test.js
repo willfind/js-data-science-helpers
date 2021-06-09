@@ -26,9 +26,8 @@ test("normalizes a vector", () => {
 
 test("normalizes a vector with only 1 unique value", () => {
   const x = range(0, 1000).map(i => 5)
-  const yTrue = range(0, 1000).map(i => NaN)
   const yPred = normalize(x)
-  expect(yPred).toStrictEqual(yTrue)
+  expect(yPred).toStrictEqual(x)
 })
 
 test("normalizes each column in a DataFrame", () => {
