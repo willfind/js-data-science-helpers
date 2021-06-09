@@ -24,6 +24,13 @@ test("normalizes a vector", () => {
   expect(abs(std(x) - 1)).toBeLessThan(1e-5)
 })
 
+test("normalizes a vector with only 1 unique value", () => {
+  const x = range(0, 1000).map(i => 5)
+  const yTrue = range(0, 1000).map(i => NaN)
+  const yPred = normalize(x)
+  expect(yPred).toStrictEqual(yTrue)
+})
+
 test("normalizes each column in a DataFrame", () => {
   let x = new DataFrame({
     a: range(0, 1000),
