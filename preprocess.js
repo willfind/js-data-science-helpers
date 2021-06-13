@@ -105,6 +105,10 @@ function preprocess(df) {
           columns.push(key)
           x.push(encodings[key])
         })
+
+        columns.splice(index, 1)
+        x.splice(index, 1)
+        continue
       }
     } else if (type === "number") {
       const clippedValues = clipOutliers(values)[0]
