@@ -11,14 +11,14 @@ let {
   isNumber,
   isBoolean,
   isString,
+  isArray,
+  correl,
 } = require("js-math-tools")
 
-let getCorrelationMatrix = require("./get-correlation-matrix.js")
-let getHighlyCorrelatedColumns = require("./get-highly-correlated-columns.js")
+// let getCorrelationMatrix = require("./get-correlation-matrix.js")
+// let getHighlyCorrelatedColumns = require("./get-highly-correlated-columns.js")
 let getOneHotEncodings = require("./get-one-hot-encodings.js")
 let clipOutliers = require("./clip-outliers.js")
-
-const DEBUG = false
 
 function preprocess(df) {
   assert(
@@ -26,178 +26,116 @@ function preprocess(df) {
     "You must pass a DataFrame into the `preprocess` function!"
   )
 
-  // create a fresh copy of the data
-  let columns = copy(df.columns)
-  let x = transpose(df.values)
-  let columnsToDrop = []
+  const columns = copy(df.columns)
+  const x = transpose(df.values)
+  let index = 0
+  let isDone = false
 
-  x.forEach((col, i) => {
-    let colName = columns[i]
+  // delete literally identical columns
+  while (!isDone) {
+    const col1 = x[index]
 
-    // parse into types
-    col = col.map(v => {
-      // undefined / missing
-      if (isUndefined(v)) return null
+    for (let i = index + 1; i < x.length; i++) {
+      const col2 = x[i]
 
-      // numbers
-      if (isNumber(v)) return v
-
-      try {
-        let vFloat = JSON.parse(v)
-        if (!isNaN(vFloat)) return vFloat
-      } catch (e) {}
-
-      if (isString(v)) {
-        // dates
-        let vDate = Date.parse(v)
-        if (!isNaN(vDate)) return vDate
-
-        // booleans
-        let vLower = v.trim().toLowerCase()
-        if (vLower === "true") return true
-        if (vLower === "false") return false
+      if (isEqual(col1, col2)) {
+        columns.splice(i, 1)
+        x.splice(i, 1)
       }
+    }
 
-      // otherwise unparseable strings
-      return v
-    })
+    index++
+    isDone = index >= columns.length - 1
+  }
 
-    x[i] = col
+  // only examine each column once!
+  index = 0
+  isDone = false
+
+  while (!isDone) {
+    const colName = columns[index]
+    const values = x[index]
+    if (!values) break
 
     // get non-missing values
-    let nonMissingValues = col.filter(v => {
+    const nonMissingValues = values.filter(v => {
       return (
         isNumber(v) ||
-        (isString(v) && v.length > 0) ||
         isBoolean(v) ||
+        (isString(v) && v.length > 0) ||
         typeof v === "object"
       )
     })
 
-    let nonMissingValuesSet = set(nonMissingValues)
-
-    // drop empty columns
-    if (nonMissingValues.length === 0) {
-      if (DEBUG) console.log(`Dropping "${colName}" because it's empty.`)
-      return columnsToDrop.push(colName)
-    }
-
-    // get primary type (i.e., number, string, etc.)
-    let types = nonMissingValues.map(v => typeof v)
-    let typeCounts = sort(count(types), (a, b) => b.count - a.count)
-    let type = typeCounts[0].item
-
-    // drop ID columns (i.e., columns with all unique values)
-    if (
-      type === "string" &&
-      nonMissingValuesSet.length === nonMissingValues.length
-    ) {
-      if (DEBUG) console.log(`Dropping "${colName}" because it's an ID column.`)
-      return columnsToDrop.push(colName)
-    }
-
-    // drop columns that contain only 1 unique value
-    if (nonMissingValuesSet.length === 1) {
-      if (DEBUG) {
-        console.log(
-          `Dropping "${colName}" because it contains only one unique value.`
-        )
-      }
-
-      return columnsToDrop.push(colName)
-    }
-
-    // drop columns that contain less than 15 non-missing values
+    // if there are fewer than 15 non-missing values, then drop the column
     if (nonMissingValues.length < 15) {
-      if (DEBUG) {
-        console.log(
-          `Dropping "${colName}" because it contains fewer than 15 values total.`
-        )
-      }
-
-      return columnsToDrop.push(colName)
+      columns.splice(index, 1)
+      x.splice(index, 1)
+      continue
     }
 
-    // for each text column:
+    // if there's only 1 unique value, then drop the column
+    const nonMissingValuesSet = set(nonMissingValues)
+
+    if (nonMissingValuesSet.length === 1) {
+      columns.splice(index, 1)
+      x.splice(index, 1)
+      continue
+    }
+
+    // get primary data type of the column
+    const types = nonMissingValues.map(v => typeof v)
+    const typeCounts = count(types)
+    const sortedTypeCounts = sort(typeCounts, (a, b) => b.count - a.count)
+    const type = sortedTypeCounts[0].item
+
     if (type === "string") {
-      // if it has less than 5 unique values, then one-hot encode it
+      // if all values are unique, then drop the column
+      if (nonMissingValuesSet.length === nonMissingValues.length) {
+        columns.splice(index, 1)
+        x.splice(index, 1)
+        continue
+      }
+
+      // if there are 5 or fewer unique values, then one-hot-encode them
       if (nonMissingValuesSet.length <= 5) {
-        let encodings = getOneHotEncodings(colName, col)
+        const encodings = getOneHotEncodings(colName, values)
 
         Object.keys(encodings).forEach(key => {
           columns.push(key)
           x.push(encodings[key])
         })
       }
+    } else if (type === "number") {
+      const clippedValues = clipOutliers(values)[0]
+      x[index] = clippedValues
 
-      // else if it contains more than 25 numerical values, then parse as numbers and set unparseable strings to NaN
-      try {
-        let numberCount =
-          typeCounts.filter(t => t.item === "number")[0].count || 0
-        if (numberCount >= 25) type = "number"
-      } catch (e) {}
+      const previousValues = x.slice(0, index)
 
-      // else if it contains fewer than 25 numerical values, then drop it
-      // else return columnsToDrop.push(colName)
-    }
+      if (previousValues.length > 0) {
+        for (let i = 0; i < previousValues.length; i++) {
+          const otherValues = previousValues[i]
+          const r = correl(values, otherValues)
 
-    // for each numerical column:
-    if (type === "number") {
-      // clip outliers
-      col = clipOutliers(col)[0]
-      x[i] = col
-    }
-  })
-
-  // drop any literally identical columns
-  x.forEach((col1, i) => {
-    if (columnsToDrop.indexOf(columns[i]) > -1) return
-
-    x.forEach((col2, j) => {
-      if (i !== j && isEqual(col1, col2)) {
-        if (DEBUG) {
-          console.log(
-            `Dropping "${columns[j]}" because it's identical to "${columns[i]}".`
-          )
+          if (r > 1 - 1e-5) {
+            columns.splice(index, 1)
+            x.splice(index, 1)
+            continue
+          }
         }
-
-        columnsToDrop.push(columns[j])
       }
-    })
-  })
+    } else {
+      x.splice(index, 1)
+      columns.splice(index, 1)
+      continue
+    }
 
-  // drop any highly correlated columns
-  let correlationMatrix = new DataFrame(getCorrelationMatrix(transpose(x)))
-  correlationMatrix.columns = columns
-  correlationMatrix.index = columns
-
-  let highlyCorrelatedColumns = getHighlyCorrelatedColumns(correlationMatrix)
-
-  while (Object.keys(highlyCorrelatedColumns).length > 0) {
-    let colName = Object.keys(highlyCorrelatedColumns)[0]
-    let similars = highlyCorrelatedColumns[colName]
-    columnsToDrop = columnsToDrop.concat(similars)
-
-    similars.forEach(similar => {
-      if (DEBUG) {
-        console.log(
-          `Dropping "${similar}" because it's highly correlated with "${colName}".`
-        )
-      }
-
-      delete highlyCorrelatedColumns[similar]
-    })
-
-    delete highlyCorrelatedColumns[colName]
+    index++
+    isDone = index >= columns.length
   }
 
-  // apply column drops
-  // and return processed dataframe
-  columnsToDrop = set(columnsToDrop)
-  let out = new DataFrame(transpose(x))
+  const out = new DataFrame(transpose(x))
   out.columns = columns
-  out = out.drop(null, columnsToDrop)
-  if (DEBUG) out.print()
   return out
 }
 
