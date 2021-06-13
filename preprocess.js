@@ -20,15 +20,15 @@ let clipOutliers = require("./clip-outliers.js")
 
 const DEBUG = false
 
-function preprocess(rawData) {
+function preprocess(df) {
   assert(
-    rawData instanceof DataFrame,
+    df instanceof DataFrame,
     "You must pass a DataFrame into the `preprocess` function!"
   )
 
   // create a fresh copy of the data
-  let columns = copy(rawData.columns)
-  let x = transpose(rawData.values)
+  let columns = copy(df.columns)
+  let x = transpose(df.values)
   let columnsToDrop = []
 
   x.forEach((col, i) => {
