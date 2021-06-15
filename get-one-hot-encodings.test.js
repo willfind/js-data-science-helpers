@@ -14,13 +14,12 @@ test("one-hot-encodes a small array", () => {
   const values = ["foo", "bar", "baz"]
 
   const yTrue = {
-    test_foo: [1, 0, 0],
     test_bar: [0, 1, 0],
     test_baz: [0, 0, 1],
   }
 
   const yPred = getOneHotEncodings(name, values)
-  expect(yPred).toStrictEqual(yPred)
+  expect(yPred).toStrictEqual(yTrue)
 })
 
 test("one-hot-encodes a large array", () => {
@@ -34,15 +33,15 @@ test("one-hot-encodes a large array", () => {
   const yPred = getOneHotEncodings(name, x)
   const counts = count(x)
 
-  expect(sum(yPred["test_a"])).toBe(counts.filter(c => c.item === "a")[0].count)
-  expect(sum(yPred["test_b"])).toBe(counts.filter(c => c.item === "b")[0].count)
-  expect(sum(yPred["test_c"])).toBe(counts.filter(c => c.item === "c")[0].count)
-  expect(sum(yPred["test_d"])).toBe(counts.filter(c => c.item === "d")[0].count)
-
-  expect(indexOf(x, "a")).toStrictEqual(indexOf(yPred["test_a"], 1))
-  expect(indexOf(x, "b")).toStrictEqual(indexOf(yPred["test_b"], 1))
-  expect(indexOf(x, "c")).toStrictEqual(indexOf(yPred["test_c"], 1))
-  expect(indexOf(x, "d")).toStrictEqual(indexOf(yPred["test_d"], 1))
+  values
+    .filter(v => v !== x[0])
+    .forEach(v => {
+      const colname = "test_" + v
+      expect(sum(yPred[colname])).toBe(
+        counts.filter(c => c.item === v)[0].count
+      )
+      expect(indexOf(x, v)).toStrictEqual(indexOf(yPred[colname], 1))
+    })
 })
 
 test("throws an error when attempting to one-hot-encode non-string variable names and non-vectors", () => {

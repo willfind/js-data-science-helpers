@@ -12,7 +12,10 @@ function getOneHotEncodings(name, values) {
   )
 
   let out = {}
-  let colNames = sort(set(values)).map(v => name + "_" + v)
+  let colToDrop = name + "_" + values[0]
+  let colNames = sort(set(values))
+    .map(v => name + "_" + v)
+    .filter(v => v !== colToDrop)
 
   colNames.forEach(colName => {
     out[colName] = values.map(v => (colName === name + "_" + v ? 1 : 0))

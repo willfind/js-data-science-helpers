@@ -115,7 +115,7 @@ test("one-hot-encodes string columns with 5 or fewer unique values", () => {
   const yPred = preprocess(x)
 
   expect(sort(yPred.columns)).toStrictEqual(
-    sort(["a"].concat(values.map(v => "b_" + v)))
+    sort(["a"].concat(values.map(v => "b_" + v).filter(v => v !== "b_" + b[0])))
   )
 })
 
