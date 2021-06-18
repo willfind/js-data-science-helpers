@@ -107,15 +107,26 @@ test("drops string columns with 100% unique values", () => {
   expect(yPred.get(null, 0).values).toStrictEqual(a)
 })
 
-test("one-hot-encodes string columns with 5 or fewer unique values", () => {
-  const values = range(0, 5).map(i => makeKey(8))
+test("one-hot-encodes string columns with fewer than 5 unique values", () => {
   const a = random(1000)
+
+  const values = range(0, 4).map(i => makeKey(8))
   const b = range(0, 1000).map(i => values[int(random() * values.length)])
-  const x = new DataFrame({ a, b })
+
+  const moreValues = range(0, 10).map(i => makeKey(8))
+  const c = range(0, 1000).map(
+    i => moreValues[int(random() * moreValues.length)]
+  )
+
+  const x = new DataFrame({ a, b, c })
   const yPred = preprocess(x)
 
   expect(sort(yPred.columns)).toStrictEqual(
-    sort(["a"].concat(values.map(v => "b_" + v).filter(v => v !== "b_" + b[0])))
+    sort(
+      ["a", "c"].concat(
+        values.map(v => "b_" + v).filter(v => v !== "b_" + b[0])
+      )
+    )
   )
 })
 

@@ -97,8 +97,8 @@ function preprocess(df) {
         continue
       }
 
-      // if there are 5 or fewer unique values, then one-hot-encode them
-      if (nonMissingValuesSet.length <= 5) {
+      // if there are fewer than 5 unique values, then one-hot-encode them
+      if (nonMissingValuesSet.length < 5) {
         const encodings = getOneHotEncodings(colName, values)
 
         Object.keys(encodings).forEach(key => {
