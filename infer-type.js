@@ -7,7 +7,58 @@ const {
   isBoolean,
   isNumber,
   argmax,
+  dropMissing,
+  dropNaN,
+  float,
 } = require("js-math-tools")
+
+const types = ["number", "boolean", "date", "object", "null", "string"]
+const nullValues = ["null", "none", "nan", "na", "n/a", "", "undefined"]
+const booleanValues = ["true", "false", "yes", "no"]
+
+function cast(value, type) {
+  if (type === "number") {
+    const out = float(value)
+    if (isNaN(out)) return null
+    return out
+  }
+
+  if (type === "boolean") {
+    const vBool = value.trim().toLowerCase()
+
+    if (vBool === "true" || vBool === "yes") {
+      return true
+    }
+
+    if (vBool === "false" || vBool === "no") {
+      return false
+    }
+
+    return null
+  }
+
+  if (type === "date") {
+    const out = new Date(value)
+    if (out.toString() === "Invalid Date") return null
+    return out
+  }
+
+  if (type === "object") {
+    // note: don't return arrays!
+    try {
+      const out = JSON.parse(value)
+      if (isArray(out)) return null
+      return out
+    } catch (e) {
+      return null
+    }
+  }
+
+  if (type === "string") {
+    if (nullValues.indexOf(value.trim().toLowerCase()) > -1) return null
+    return value
+  }
+}
 
 function inferType(arr) {
   assert(
@@ -28,83 +79,36 @@ function inferType(arr) {
   // - null
   // - string
   // note: do NOT return arrays!
-  const types = ["number", "boolean", "date", "object", "null", "string"]
-  const counts = {}
   const dict = {}
-  const nullValues = ["null", "none", "nan", "na", "n/a", ""]
-  const booleanValues = ["true", "false", "yes", "no"]
 
-  types.forEach(t => {
-    counts[t] = 0
-    dict[t] = []
+  types.forEach(type => {
+    dict[type] = arr.map(v => cast(v, type))
   })
 
-  arr.forEach(value => {
-    if (!isString(value)) {
-      value = JSON.stringify(value)
+  const counts = types.map(type => {
+    if (type === "number") {
+      return dropNaN(dict.number).length
     }
 
-    dict.string.push(value)
-
-    // numbers & booleans
-    const vLower = value.toLowerCase()
-    const vLowerTrimmed = vLower.trim()
-    let isBoolean = false
-
-    if (booleanValues.indexOf(vLowerTrimmed) > -1) {
-      dict.boolean.push(vLowerTrimmed === "true" || vLowerTrimmed === "yes")
-      counts.boolean++
-      isBoolean = true
-    } else {
-      dict.boolean.push(null)
+    if (type === "boolean") {
+      return dropMissing(dict.boolean).length
     }
 
-    const vFloat = parseFloat(value)
-
-    if (isNumber(vFloat) && !isBoolean) {
-      dict.number.push(vFloat)
-      counts.number++
-    } else {
-      dict.number.push(null)
+    if (type === "date") {
+      return dropMissing(dict.date).length
     }
 
-    try {
-      const vParsed = JSON.parse(value)
-      const vParsedLower = JSON.parse(vLower)
+    if (type === "object") {
+      return dropMissing(dict.object).length
+    }
 
-      // objects & null values
-      if (typeof vParsed === "object") {
-        if (nullValues.indexOf(vLower) > -1) {
-          dict.object.push(null)
-          dict.null.push(vParsedLower)
-          counts.null++
-        } else {
-          dict.object.push(vParsed)
-          dict.null.push(null)
-          counts.object++
-        }
-      } else {
-        dict.object.push(null)
-        dict.null.push(null)
-      }
-    } catch (e) {
-      // dates & otherwise unparseable strings
-      const vDate = new Date(value)
-
-      if (vDate.toString() !== "Invalid Date") {
-        dict.date.push(vDate)
-        dict.string.push(null)
-        counts.date++
-      } else {
-        dict.date.push(null)
-        dict.string.push(value)
-        counts.string++
-      }
+    if (type === "string") {
+      return dropMissing(dict.string).length
     }
   })
 
-  const primaryType = types[argmax(types.map(t => counts[t]))]
-  return dict[primaryType]
+  const primaryType = types[argmax(counts)]
+  return { type: primaryType, values: dict[primaryType] }
 }
 
 module.exports = inferType

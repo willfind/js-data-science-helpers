@@ -5,13 +5,13 @@ test("correctly infers a variety of data types from strings", () => {
   // numbers
   const a = ["2.5", "-3.4", "72", "1e5", "0"]
   const aTrue = a.map(v => float(v))
-  const aPred = inferType(a)
+  const aPred = inferType(a).values
   expect(aPred).toStrictEqual(aTrue)
 
   // booleans
   const b = ["true", "false", "TRUE", "True", "False"]
   const bTrue = [true, false, true, true, false]
-  const bPred = inferType(b)
+  const bPred = inferType(b).values
   expect(bPred).toStrictEqual(bTrue)
 
   // dates
@@ -19,39 +19,32 @@ test("correctly infers a variety of data types from strings", () => {
     const year = int(random() * 50 + 1970)
     const month = int(random() * 12 + 1)
     const day = int(random() * 28 + 1)
-    return new Date(`${month}-${day}-${year}`).toJSON()
+    return `${month}-${day}-${year}`
   })
 
   const cTrue = c.map(v => new Date(v))
-  const cPred = inferType(c)
+  const cPred = inferType(c).values
   expect(cPred).toStrictEqual(cTrue)
 
   // NOT arrays
   const d = ["[2, 3, 4]", "[5, 6, 7]", "[8, 9, 10]"]
   const dTrue = copy(d)
-  const dPred = inferType(d)
+  const dPred = inferType(d).values
   expect(dPred).toStrictEqual(dTrue)
 
   // objects
-  const e = ["{foo: 'bar'}", "{x: 5, y: 7, z: 9}", "{yes: {no: 'probably'}}"]
-
-  const eTrue = [
+  const e = [
     { foo: "bar" },
     { x: 5, y: 7, z: 9 },
     { yes: { no: "probably" } },
-  ]
+  ].map(v => JSON.stringify(v))
 
-  const ePred = inferType(e)
+  const eTrue = e.map(v => JSON.parse(v))
+  const ePred = inferType(e).values
   expect(ePred).toStrictEqual(eTrue)
 
-  // null / missing values / empty strings
-  const f = ["null", "none", "nan", "NaN", "NA", "N/A", ""]
-  const fTrue = range(0, f.length).map(v => null)
-  const fPred = inferType(f)
-  expect(fPred).toStrictEqual(fTrue)
-
   // otherwise unparseable strings
-  const g = [
+  const f = [
     "foo",
     "bar",
     "baz",
@@ -59,8 +52,14 @@ test("correctly infers a variety of data types from strings", () => {
     `"Here's another quote," she said.`,
   ]
 
-  const gTrue = copy(g)
-  const gPred = inferType(g)
+  const fTrue = copy(f)
+  const fPred = inferType(f).values
+  expect(fPred).toStrictEqual(fTrue)
+
+  // null values
+  const g = ["1", "2", "3", "null", "5", "NaN", "undefined", "8"]
+  const gTrue = [1, 2, 3, null, 5, null, null, 8]
+  const gPred = inferType(g).values
   expect(gPred).toStrictEqual(gTrue)
 })
 
