@@ -79,6 +79,12 @@ function inferType(arr) {
   // - string
   // note: do NOT return arrays!
   const types = arr.map(v => {
+    if (v === undefined) return "null"
+
+    if (!isString(v)) {
+      v = JSON.stringify(v)
+    }
+
     const vLower = v.toLowerCase()
     const vLowerTrimmed = vLower.trim()
 
