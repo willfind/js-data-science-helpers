@@ -1,5 +1,5 @@
 const inferType = require("./infer-type.js")
-const { float, int, random, range, copy } = require("js-math-tools")
+const { float, int, random, range, copy, normal } = require("js-math-tools")
 
 test("correctly infers a variety of data types from strings", () => {
   // numbers
@@ -68,4 +68,22 @@ test("correctly infers the data type when the types are mixed", () => {
   const aTrue = [1, 2, 3, null, 5, null]
   const aPred = inferType(a).values
   expect(aPred).toStrictEqual(aTrue)
+
+  const b = normal(1000).map(v => v.toString())
+
+  for (let i = 0; i < 0.25 * b.length; i++) {
+    const index = int(random() * b.length)
+    b[index] = "true"
+  }
+
+  expect(inferType(b).type).toBe("number")
+
+  const c = normal(1000).map(v => v.toString())
+
+  for (let i = 0; i < 0.75 * c.length; i++) {
+    const index = int(random() * c.length)
+    c[index] = new Date().toJSON()
+  }
+
+  expect(inferType(c).type).toBe("date")
 })
