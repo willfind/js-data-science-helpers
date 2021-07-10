@@ -15,12 +15,12 @@ let {
   correl,
 } = require("js-math-tools")
 
-// let getCorrelationMatrix = require("./get-correlation-matrix.js")
-// let getHighlyCorrelatedColumns = require("./get-highly-correlated-columns.js")
 let getOneHotEncodings = require("./get-one-hot-encodings.js")
 let clipOutliers = require("./clip-outliers.js")
 
 function preprocess(df) {
+  // NOTE: This function assumes that data types have already been inferred!
+
   assert(
     df instanceof DataFrame,
     "You must pass a DataFrame into the `preprocess` function!"
