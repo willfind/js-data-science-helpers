@@ -16,6 +16,10 @@ const nullValues = ["null", "none", "nan", "na", "n/a", "", "undefined"]
 const booleanValues = ["true", "false", "yes", "no"]
 
 function cast(value, type) {
+  if (value === undefined) {
+    value = "undefined"
+  }
+
   if (type === "number") {
     const out = float(value)
     if (isNaN(out)) return null
@@ -23,15 +27,17 @@ function cast(value, type) {
   }
 
   if (type === "boolean") {
-    const vBool = value.trim().toLowerCase()
+    try {
+      const vBool = value.trim().toLowerCase()
 
-    if (vBool === "true" || vBool === "yes") {
-      return true
-    }
+      if (vBool === "true" || vBool === "yes") {
+        return true
+      }
 
-    if (vBool === "false" || vBool === "no") {
-      return false
-    }
+      if (vBool === "false" || vBool === "no") {
+        return false
+      }
+    } catch (e) {}
 
     return null
   }
@@ -54,7 +60,12 @@ function cast(value, type) {
   }
 
   if (type === "string") {
-    if (nullValues.indexOf(value.trim().toLowerCase()) > -1) return null
+    try {
+      if (nullValues.indexOf(value.trim().toLowerCase()) > -1) return null
+    } catch (e) {
+      return null
+    }
+
     return value
   }
 }

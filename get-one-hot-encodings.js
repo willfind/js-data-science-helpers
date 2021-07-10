@@ -1,4 +1,12 @@
-let { assert, sort, set, isString, isArray, shape } = require("js-math-tools")
+let {
+  assert,
+  sort,
+  set,
+  isString,
+  isArray,
+  shape,
+  isUndefined,
+} = require("js-math-tools")
 
 function getOneHotEncodings(name, values) {
   assert(
@@ -14,6 +22,7 @@ function getOneHotEncodings(name, values) {
   let out = {}
   let colToDrop = name + "_" + values[0]
   let colNames = sort(set(values))
+    .filter(v => !isUndefined(v))
     .map(v => name + "_" + v)
     .filter(v => v !== colToDrop)
 

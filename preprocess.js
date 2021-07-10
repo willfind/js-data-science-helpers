@@ -15,16 +15,23 @@ let {
   correl,
 } = require("js-math-tools")
 
-let getOneHotEncodings = require("./get-one-hot-encodings.js")
-let clipOutliers = require("./clip-outliers.js")
+const getOneHotEncodings = require("./get-one-hot-encodings.js")
+const clipOutliers = require("./clip-outliers.js")
+const inferType = require("./infer-type.js")
 
 function preprocess(df) {
-  // NOTE: This function assumes that data types have already been inferred!
-
   assert(
     df instanceof DataFrame,
     "You must pass a DataFrame into the `preprocess` function!"
   )
+
+  const types = {}
+
+  df = df.apply((col, colName) => {
+    const results = inferType(col)
+    types[colName] = results.type
+    return results.values
+  })
 
   const columns = copy(df.columns)
   const x = transpose(df.values)
@@ -58,14 +65,7 @@ function preprocess(df) {
     if (!values) break
 
     // get non-missing values
-    const nonMissingValues = values.filter(v => {
-      return (
-        isNumber(v) ||
-        isBoolean(v) ||
-        (isString(v) && v.length > 0) ||
-        typeof v === "object"
-      )
-    })
+    const nonMissingValues = values.filter(v => !isUndefined(v))
 
     // if there are fewer than 15 non-missing values, then drop the column
     if (nonMissingValues.length < 15) {
@@ -84,10 +84,7 @@ function preprocess(df) {
     }
 
     // get primary data type of the column
-    const types = nonMissingValues.map(v => typeof v)
-    const typeCounts = count(types)
-    const sortedTypeCounts = sort(typeCounts, (a, b) => b.count - a.count)
-    const type = sortedTypeCounts[0].item
+    const type = types[colName]
 
     if (type === "string") {
       // if all values are unique, then drop the column
@@ -104,6 +101,7 @@ function preprocess(df) {
         Object.keys(encodings).forEach(key => {
           columns.push(key)
           x.push(encodings[key])
+          types[key] = "number"
         })
 
         columns.splice(index, 1)
