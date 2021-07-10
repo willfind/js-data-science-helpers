@@ -12,7 +12,6 @@ const {
   float,
 } = require("js-math-tools")
 
-const types = ["number", "boolean", "date", "object", "null", "string"]
 const nullValues = ["null", "none", "nan", "na", "n/a", "", "undefined"]
 const booleanValues = ["true", "false", "yes", "no"]
 
@@ -79,36 +78,50 @@ function inferType(arr) {
   // - null
   // - string
   // note: do NOT return arrays!
-  const dict = {}
+  const types = arr.map(v => {
+    const vLower = v.toLowerCase()
+    const vLowerTrimmed = vLower.trim()
 
-  types.forEach(type => {
-    dict[type] = arr.map(v => cast(v, type))
+    // null
+    if (nullValues.indexOf(vLowerTrimmed) > -1) {
+      return "null"
+    }
+
+    // boolean
+    if (booleanValues.indexOf(vLowerTrimmed) > -1) {
+      return "boolean"
+    }
+
+    try {
+      const vParsed = JSON.parse(v)
+
+      // number
+      if (isNumber(vParsed)) {
+        return "number"
+      }
+
+      // object
+      if (typeof vParsed === "object") {
+        if (isArray(vParsed)) return "string"
+        return "object"
+      }
+
+      return "string"
+    } catch (e) {
+      // date
+      const vDate = new Date(v)
+
+      if (vDate.toString() !== "Invalid Date") {
+        return "date"
+      }
+
+      return "string"
+    }
   })
 
-  const counts = types.map(type => {
-    if (type === "number") {
-      return dropNaN(dict.number).length
-    }
-
-    if (type === "boolean") {
-      return dropMissing(dict.boolean).length
-    }
-
-    if (type === "date") {
-      return dropMissing(dict.date).length
-    }
-
-    if (type === "object") {
-      return dropMissing(dict.object).length
-    }
-
-    if (type === "string") {
-      return dropMissing(dict.string).length
-    }
-  })
-
-  const primaryType = types[argmax(counts)]
-  return { type: primaryType, values: dict[primaryType] }
+  const counts = count(types).sort((a, b) => b.count - a.count)
+  const primaryType = counts[0].item
+  return { type: primaryType, values: arr.map(v => cast(v, primaryType)) }
 }
 
 module.exports = inferType

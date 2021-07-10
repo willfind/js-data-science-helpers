@@ -63,4 +63,9 @@ test("correctly infers a variety of data types from strings", () => {
   expect(gPred).toStrictEqual(gTrue)
 })
 
-test("correctly infers the data type when the types are mixed", () => {})
+test("correctly infers the data type when the types are mixed", () => {
+  const a = ["1", "2", "3", "four", "5", "six"]
+  const aTrue = [1, 2, 3, null, 5, null]
+  const aPred = inferType(a).values
+  expect(aPred).toStrictEqual(aTrue)
+})
