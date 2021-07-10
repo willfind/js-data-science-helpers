@@ -86,4 +86,14 @@ test("correctly infers the data type when the types are mixed", () => {
   }
 
   expect(inferType(c).type).toBe("date")
+
+  const d = range(0, 1000).map(v => {
+    if (random() < 0.1) {
+      return "sldkfjsldkfjsldkjfsldkfj"
+    } else {
+      return JSON.stringify({ foo: "bar" })
+    }
+  })
+
+  expect(inferType(d).type).toBe("object")
 })
