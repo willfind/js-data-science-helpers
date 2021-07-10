@@ -9,6 +9,7 @@ module.exports = {
   getPValueMatrix: require("./get-p-value-matrix.js"),
   getPercentages: require("./get-percentages.js"),
   gramSchmidtOrthonormalize: require("./gram-schmidt-orthonormalize.js"),
+  inferType: require("./infer-type.js"),
   isBinary: require("./is-binary.js"),
   normalize: require("./normalize.js"),
   pValue: require("./p-value.js"),
@@ -23,7 +24,5 @@ module.exports = {
     Object.keys(self).forEach(key => {
       global[key] = self[key]
     })
-
-    return self
   },
 }
