@@ -13,6 +13,7 @@ let {
   isString,
   isArray,
   correl,
+  dropMissing,
 } = require("js-math-tools")
 
 const getOneHotEncodings = require("./get-one-hot-encodings.js")
@@ -65,7 +66,7 @@ function preprocess(df) {
     if (!values) break
 
     // get non-missing values
-    const nonMissingValues = values.filter(v => !isUndefined(v))
+    const nonMissingValues = dropMissing(values)
 
     // if there are fewer than 15 non-missing values, then drop the column
     if (nonMissingValues.length < 15) {
@@ -111,21 +112,21 @@ function preprocess(df) {
     } else if (type === "number") {
       const clippedValues = clipOutliers(values)[0]
       x[index] = clippedValues
+      let wasHighlyCorrelated = false
 
-      const previousValues = x.slice(0, index)
+      for (let i = 0; i < index; i++) {
+        const otherValues = x[i]
+        const r = correl(values, otherValues)
 
-      if (previousValues.length > 0) {
-        for (let i = 0; i < previousValues.length; i++) {
-          const otherValues = previousValues[i]
-          const r = correl(values, otherValues)
-
-          if (r > 0.99) {
-            columns.splice(index, 1)
-            x.splice(index, 1)
-            continue
-          }
+        if (r > 0.99) {
+          columns.splice(index, 1)
+          x.splice(index, 1)
+          wasHighlyCorrelated = true
+          break
         }
       }
+
+      if (wasHighlyCorrelated) continue
     } else {
       x.splice(index, 1)
       columns.splice(index, 1)
