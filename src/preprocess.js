@@ -119,7 +119,7 @@ function preprocess(df) {
           const otherValues = previousValues[i]
           const r = correl(values, otherValues)
 
-          if (r > 1 - 1e-5) {
+          if (r > 0.99) {
             columns.splice(index, 1)
             x.splice(index, 1)
             continue

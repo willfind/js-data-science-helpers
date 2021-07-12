@@ -1,4 +1,4 @@
-module.exports = {
+const helpers = {
   clipOutliers: require("./clip-outliers.js"),
   containsOnlyNumbers: require("./contains-only-numbers.js"),
   diagonalize: require("./diagonalize.js"),
@@ -26,3 +26,11 @@ module.exports = {
     })
   },
 }
+
+try {
+  window.JSDataScienceHelpers = helpers
+} catch (e) {}
+
+try {
+  module.exports = helpers
+} catch (e) {}
