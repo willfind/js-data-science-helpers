@@ -12,10 +12,11 @@
   "author": "jrc03c",
   "license": "ISC",
   "dependencies": {
-    "js-math-tools": "github:jrc03c/js-math-tools",
-    "make-key": "gitlab:jrc03c/make-key"
+    "js-math-tools": "github:willfind/js-math-tools"
   },
   "devDependencies": {
+    "browserify": "^17.0.0",
+    "cuid": "^2.1.8",
     "jest": "^27.0.3"
   }
 }

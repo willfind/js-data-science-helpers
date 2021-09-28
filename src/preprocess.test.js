@@ -1,6 +1,7 @@
+const makeKey = require("cuid")
 const preprocess = require("./preprocess.js")
 const getCorrelationMatrix = require("./get-correlation-matrix.js")
-const makeKey = require("make-key")
+
 const gramSchmidtOrthonormalize = require("./gram-schmidt-orthonormalize.js")
 const {
   DataFrame,
