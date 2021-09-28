@@ -12,11 +12,11 @@
   "author": "jrc03c",
   "license": "ISC",
   "dependencies": {
-    "js-math-tools": "github:willfind/js-math-tools",
-	"make-key": "gitlab:willfind/make-key"
+    "js-math-tools": "github:willfind/js-math-tools"
   },
   "devDependencies": {
     "browserify": "^17.0.0",
+    "cuid": "^2.1.8",
     "jest": "^27.0.3"
   }
 }
